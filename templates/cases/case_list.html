@@ -1,0 +1,29 @@
+{% extends 'lawyer_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block stylesheet %}
+
+{% endblock stylesheet %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-4 mb-4">CASE LIST</h1>
+
+    <div class="row">
+        <h2>Case List</h2>
+        <ul>
+            {% for case in object_list %}
+            <li>
+                <a href="{% url 'case_detail' case.pk %}">Case #{{ case.pk }} - {{ case.description }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascript %}
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+{% endblock javascript %}

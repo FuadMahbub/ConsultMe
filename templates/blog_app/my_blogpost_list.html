@@ -1,0 +1,79 @@
+{% extends 'lawyer_base.html' %}
+{% load static %}
+
+{% block title %}{{title}}{% endblock title %}
+
+
+{% block stylesheet %}
+
+{% endblock stylesheet %}
+
+
+{% block content %}
+<h1></h1>
+
+<div class="col-md-8">
+    <h1>BLOG Post List</h1>
+        <ul>
+            {% for post  in blog_posts  %}
+                
+
+                <div class="card mb-3" style="max-width: 540px;">
+                    <div class="row g-0">
+                    
+                    <div class="col-md-8">
+                        <div class="card-body">
+                        
+                        <h5 class="card-title"><strong>Title</strong><h2>{{  post.title  }}</h2></h5>
+                        
+                        <li><a href="{% url 'blog:lawyerblogdetail' post.id %}" class="btn btn-primary">Read More>> </a></li>
+
+                        <a href="{% url 'blog:update' post.id %}" class="btn btn-warning"><i class="fas fa-edit fa-lg"></i></a>
+                        <a href="{% url 'blog:delete' post.id%}" class="btn btn-danger"><i class="fas fa-trash fa-lg"></i></a>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            {% empty %}
+                <li>No Blogs</li>
+            {% endfor %}
+        </ul>
+        {% comment %} <a href="{% url 'lawyer:room_detail' room.id %}">View Room Detail</a> {% endcomment %}
+        
+        
+
+</div>
+{% endblock content %}
+
+
+
+{% block javascript %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const currentDate = new Date().toISOString().slice(0, 10);
+        const currentTime = new Date().toTimeString().slice(0, 5);
+    
+        const fromDateField = document.querySelector('input[name="available_from_date"]');
+        const toDateField = document.querySelector('input[name="available_to_date"]');
+        const fromTimeField = document.querySelector('input[name="available_from_time"]');
+        const toTimeField = document.querySelector('input[name="available_to_time"]');
+    
+        fromDateField.addEventListener('change', function() {
+            if (this.value === currentDate) {
+                fromTimeField.min = currentTime;
+            } else {
+                fromTimeField.min = '00:00';
+            }
+        });
+    
+        toDateField.addEventListener('change', function() {
+            if (this.value === currentDate) {
+                toTimeField.min = currentTime;
+            } else {
+                toTimeField.min = '00:00';
+            }
+        });
+    });
+    </script>
+    
+{% endblock%}

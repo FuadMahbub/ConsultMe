@@ -1,0 +1,111 @@
+<!-- base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>{% block title %}{% endblock title %}</title>
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'img/fevicon.png' %}" type="image/gif" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sen:wght@400;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <!-- Data Tables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.1/css/jquery.dataTables.min.css">
+    <!-- Custom Scrollbar -->
+    <link rel="stylesheet" href="{% static 'css/jquery.mCustomScrollbar.min.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+
+    <style>
+      body{
+         background-image: url("{% static 'img/background.png' %}"); /* Set the background image */
+         background-size: cover; /* Cover the entire background */
+         background-position: center; /* Center the background image */
+         background-repeat: no-repeat; /* Avoid repeating the background */
+      }
+      .navbar-nav .nav-link i {
+         margin-right: 5px;  /* Space between icon and text */
+     }
+  </style>
+    {% block stylesheet %}{% endblock %}
+</head>
+<body>
+    <header class="p-3 bg-dark text-white">
+        <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <a href="/" class="navbar-brand"><img src="{% static 'img/logo1.png' %}"></a>
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{% url 'home' %}">Home</a>
+                            </li>
+                            <li class="nav-item ">
+                              <a class="nav-link px-2 text-white" href="{% url 'core:contact' %}">Contact Us</a>
+                            </li>
+                            <li class="nav-item">
+                               <a class="nav-link" href="#">What we do</a>
+                            </li>
+                            <li class="nav-item">
+                               <a class="nav-link" href="#">Blog</a>
+                            </li>
+
+
+                            <li><a href="#" class="nav-link px-2 link-body-emphasis"></a></li>
+                            <li><a href="#" class="nav-link px-2 link-body-emphasis"></a></li>
+                            <li><a href="#" class="nav-link px-2 link-body-emphasis"></a></li>
+                            <li><a href="#" class="nav-link px-2 link-body-emphasis"></a></li>
+                            <li><a href="#" class="nav-link px-2 link-body-emphasis"></a></li>
+                            <li><a href="#" class="nav-link px-2 link-body-emphasis"></a></li>
+                           <!-- Other navigation items -->
+                              <li class="nav-item">
+                                 <a class="nav-link text-white" href="{% url 'accounts:choose_login' %}">
+                                    <i class="fas fa-sign-in-alt"></i> Login
+                                 </a>
+                              </li>
+                              <li class="nav-item">
+                                 <a class="nav-link text-white" href="{% url 'accounts:choose' %}">
+                                    <i class="fas fa-user-plus"></i> Register
+                                 </a>
+                              </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="">
+            {% for message in messages %}
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+                Swal.fire({
+                    icon: "{{ message.tags }}",
+                    title: "{{ message.tags|capfirst }}",
+                    text: "{{ message }}",
+                    showConfirmButton: true,
+                });
+            </script>
+            {% endfor %}
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    <!-- Scripts -->
+
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+    {% block javascript %}{% endblock %}
+</body>
+</html>

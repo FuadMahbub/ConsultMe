@@ -1,0 +1,33 @@
+{% extends 'client_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h5 class="m-0">{{ heading }}</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <img src="{{ client.photo.url }}" alt="Profile Picture" class="img-fluid mb-4" style="max-width: 200px; border-radius: 50%;">
+                        <h2>Client Profile</h2>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                        <p><strong>Username:</strong> {{ client.username }}</p>
+                        <p><strong>Phone Number:</strong> {{ client.phone_number }}</p>
+                        <p><strong>Address:</strong> {{ client.address }}</p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="{% url 'accounts:update_client_profile' %}" class="btn btn-primary mx-2">Update Profile</a>
+                        <a href="{% url 'accounts:client_home' %}" class="btn btn-secondary mx-2">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock content %}

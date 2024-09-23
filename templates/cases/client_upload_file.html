@@ -1,0 +1,12 @@
+{% extends 'client_base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Upload File for Case #{{ case_id }}</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% load crispy_forms_tags %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+</div>
+{% endblock %}

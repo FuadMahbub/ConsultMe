@@ -1,0 +1,40 @@
+{% extends 'lawyer_base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h1 class="mb-4">Closed Case Details</h1>
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            Case ID: {{ closed_case.case.id }}
+        </div>
+        <div class="card-body">
+            <div class="text-center mb-4">
+                <img src="{{ client.photo.url }}" alt="Client Profile Picture" class="rounded-circle" style="width: 150px; height: 150px;">
+            </div>
+            <h5 class="card-title">Case Name: {{ closed_case.case.name }}</h5>
+            <p class="card-text">Description: {{ closed_case.case.description }}</p>
+            <p class="card-text">Client: {{ client.user.email }}</p>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p class="card-text">Total Fee: ${{ case.total }}</p>
+                    <p class="card-text">Total Paid: ${{ invoice.amount }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p class="card-text">Invoice Status: {{ invoice.status }}</p>
+                    <p class="card-text">Rating: {% if closed_case.rating %}{{ closed_case.rating }}/5{% else %}Not Rated{% endif %}</p>
+                </div>
+            </div>
+            <hr>
+            <h4>Client Review</h4>
+            {% if closed_case.review %}
+            <p>{{ closed_case.review }}</p>
+            {% else %}
+            <p>No review provided.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

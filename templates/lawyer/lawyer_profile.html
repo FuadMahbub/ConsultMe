@@ -1,0 +1,36 @@
+{% extends 'lawyer_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+
+{% block content %}
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h5 class="m-0">{{ heading }}</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <img src="{{ lawyer.photo.url }}" alt="Profile Picture" class="img-fluid rounded-circle mb-4" style="max-width: 200px;">
+                        <h2>Lawyer Profile</h2>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                        <p><strong>Username:</strong> {{ lawyer.username }}</p>
+                        <p><strong>Phone Number:</strong> {{ lawyer.phone_number }}</p>
+                        <p><strong>Address:</strong> {{ lawyer.address }}</p>
+                        <p><strong>College:</strong> {{ lawyer.college }}</p>
+                        <p><strong>Expertise:</strong> {{ lawyer.expertise }}</p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="{% url 'accounts:update_lawyer_profile' %}" class="btn btn-primary mx-2">Update Profile</a>
+                        <a href="{% url 'accounts:lawyer_home' %}" class="btn btn-secondary mx-2">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock content %}

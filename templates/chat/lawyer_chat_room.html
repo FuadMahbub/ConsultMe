@@ -1,0 +1,107 @@
+{% extends 'lawyer_base.html' %}
+{% load static %}
+
+{% block title %}{{title}}{% endblock title %}
+
+
+{% block stylesheet %}
+<style>
+    /* CSS styles for chat messages */
+    #chat-messages {
+        height: 300px;
+        overflow-y: auto;
+    }
+</style>
+{% endblock stylesheet %}
+
+
+{% block content %}
+<h1>Lawyer Chat Room</h1>
+    <div id="chat-messages">
+        {% for message in chat_room.messages.all %}
+            <p>{{ message.content }}</p>
+        {% endfor %}
+    </div>
+    <form id="message-form" method="post">
+        {% csrf_token %}
+        {% load crispy_forms_tags %}
+        {{ form|crispy }}
+        <button type="submit">Send</button>
+    </form>
+
+{% comment %} <script>
+    // Determine the base WebSocket URL
+    const baseWebSocketURL = 'ws://' + window.location.host + '/ws/lawyer-chat-room/';
+
+    // Extract the room name from the Django template
+    const roomName = '{{ chat_room_name }}';
+
+    // Check if the room name is not empty
+    if (roomName) {
+        // Append the room name to the base URL
+        const webSocketURL = baseWebSocketURL + roomName;
+
+        // WebSocket connection
+        const chatSocket = new WebSocket(webSocketURL);
+
+        // Function to add a new message to the chat interface
+        function addMessage(message) {
+            $('#chat-messages').append('<p>' + message + '</p>');
+        }
+
+        // Event listener for the WebSocket connection
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            addMessage(data.message);
+        };
+
+        // Event listener for sending messages
+        $('#send-message').click(function() {
+            const messageInputDom = $('#message-input');
+            const message = messageInputDom.val();
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.val('');
+        });
+    } else {
+        console.error('Room name is empty.');
+    }
+</script> {% endcomment %}
+
+{% endblock content %}
+
+
+
+{% block javascript %}
+<script>
+    // WebSocket connection
+    const chatSocket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/lawyer-chat-room/{{ chat_room.accepted_client.id }}/'
+    );
+
+    // Function to add a new message to the chat interface
+    function addMessage(message) {
+        $('#chat-messages').append('<p>' + message + '</p>');
+    }
+    
+    // Event listener for the WebSocket connection
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        addMessage(data.message);
+    };
+
+    // Event listener for sending messages
+    $('#send-message').click(function() {
+        const messageInputDom = $('#message-input');
+        const message = messageInputDom.val();
+        chatSocket.send(JSON.stringify({
+            'message': message
+        }));
+        messageInputDom.val('');
+    });
+</script>
+    
+{% endblock%}

@@ -1,0 +1,178 @@
+{% extends 'lawyer_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block stylesheet %}
+
+{% endblock stylesheet %}
+
+{% block content %}
+<div class="container mt-3">
+    <h1 class="mb-3">Dashboard</h1>
+
+    <!-- Consultation Post Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2>Consultation Posts</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Years of Experience</th>
+                            <th>Created At</th>
+                            <th>Consultation Fee</th>
+                            <th>Available From</th>
+                            <th>Available To</th>
+                            <th>Is Available</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for post in consultation_posts %}
+                        <tr>
+                            <td>{{ post.id }}</td>
+                            <td>{{ post.years_of_experience }}</td>
+                            <td>{{ post.created_at }}</td>
+                            <td>{{ post.consultation_fee }}</td>
+                            <td>{{ post.available_from }}</td>
+                            <td>{{ post.available_to }}</td>
+                            <td>{{ post.is_available }}</td>
+                            <td>
+                                <a href="{% url 'lawyer:update' post.id %}" class="btn btn-warning"><i class="fas fa-edit"></i> Edit</a>
+                                <a href="{% url 'lawyer:delete' post.id %}" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="8">No consultation post found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-header bg-danger text-white">
+            <h2>Cases</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for case in cases %}
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Case ID: {{ case.id }}</h5>
+                            <p>Description: {{ case.description }}</p>
+                            <p>Status: {{ case.status }}</p>
+                            <a href="{% url 'case:lawyer_case' case.id %}" class="btn btn-info"><i class="fas fa-eye"></i> View Case Files</a>
+                            
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="col-md-12">No cases available.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <!-- Accepted Requests Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2>Accepted Requests</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for accepted_client in accepted_clients %}
+                <div class="col-md-6">
+                    <div class="card accepted-request-card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <img src="{{ accepted_client.client.photo.url }}" class="img-fluid rounded-start" alt="Client Photo">
+                                </div>
+                                <div class="col-md-8">
+                                    <h5 class="card-title">{{ accepted_client.client.username }}</h5>
+                                    <p>{{ accepted_client.client.email }}</p>
+                                    <a href="#" class="btn btn-warning"><i class="fas fa-eye"></i> View Profile</a>
+                                    <a href="{% url 'lawyer:delete_client' accepted_client.id %}" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="col-md-12">No accepted requests.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoices Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2>Invoices</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for invoice in invoices %}
+                <div class="col-md-6">
+                    <div class="card invoice-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Invoice ID: {{ invoice.id }}</h5>
+                            <p>Amount Due: {{ invoice.amount }}</p>
+                            <p>Description: {{ invoice.description }}</p>
+                            <p>Status: {{ invoice.status }}</p>
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'billing:lawyer_invoice_detail' invoice.id %}" class="btn btn-warning"><i class="fas fa-eye"></i> View Invoice</a>
+                                <a href="{% url 'billing:download_invoice' invoice.id %}" class="btn btn-success"><i class="fas fa-file-download"></i> Download Invoice</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="col-md-12">No invoices available.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Rooms Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2>Rooms</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for room in rooms %}
+                <div class="col-md-6">
+                    <div class="card room-card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ room.name }}</h5>
+                            <p>
+                                {% if room.client %}
+                                    (Accepted Client: {{ room.client.user.email }})
+                                {% endif %}
+                            </p>
+                            <p><small>Last updated 3 mins ago</small></p>
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'chat:chatroom' room.id %}" class="btn btn-warning"><i class="fas fa-sign-in-alt"></i> Enter Room</a>
+                                <a href="{% url 'lawyer:room_delete' room.id %}" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="col-md-12">No rooms found.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascript %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

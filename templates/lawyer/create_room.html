@@ -1,0 +1,70 @@
+{% extends 'lawyer_base.html' %}
+{% load static %}
+
+{% block title %}{{title}}{% endblock title %}
+
+
+{% block stylesheet %}
+
+{% endblock stylesheet %}
+
+
+{% block content %}
+<h1></h1>
+
+<div>
+    <div class="container">
+        {% comment %} <form action="" method="POST">
+            {% csrf_token %}
+            {% load crispy_forms_tags %}
+            {{ form|crispy }}
+           
+            <button type="submit" class="btn btn-primary" >SignUp</button>
+        </form> {% endcomment %}
+    
+        <h2>Create Room</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% comment %} <p>Username: {{ user.email }}</p> {% endcomment %}
+            {% load crispy_forms_tags %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary">Create Room</button>
+        </form>
+    
+    </div>
+
+</div>
+{% endblock content %}
+
+
+
+{% block javascript %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const currentDate = new Date().toISOString().slice(0, 10);
+        const currentTime = new Date().toTimeString().slice(0, 5);
+    
+        const fromDateField = document.querySelector('input[name="available_from_date"]');
+        const toDateField = document.querySelector('input[name="available_to_date"]');
+        const fromTimeField = document.querySelector('input[name="available_from_time"]');
+        const toTimeField = document.querySelector('input[name="available_to_time"]');
+    
+        fromDateField.addEventListener('change', function() {
+            if (this.value === currentDate) {
+                fromTimeField.min = currentTime;
+            } else {
+                fromTimeField.min = '00:00';
+            }
+        });
+    
+        toDateField.addEventListener('change', function() {
+            if (this.value === currentDate) {
+                toTimeField.min = currentTime;
+            } else {
+                toTimeField.min = '00:00';
+            }
+        });
+    });
+    </script>
+    
+{% endblock%}

@@ -1,0 +1,92 @@
+{% extends 'client_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block stylesheet %}
+
+<!-- Custom styling -->
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+    }
+    .blog-list {
+        padding-top: 20px;
+    }
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .card-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+    .btn-primary {
+        background-color: #004085;
+        border: none;
+    }
+    .btn-primary:hover {
+        background-color: #002f5d;
+    }
+</style>
+{% endblock stylesheet %}
+
+{% block content %}
+<div class="container blog-list">
+    <div class="col-md-8 offset-md-2">
+        <h1 class="mb-4">Blog Post List</h1>
+        <div class="list-group">
+            {% for post in blog_posts %}
+                <div class="card mb-4">
+                    <div class="row no-gutters">
+                        <div class="col-md-4 d-flex align-items-center justify-content-center">
+                            <!-- Placeholder for an image. Can be replaced with an actual blog image if available -->
+                            <img src="{% static 'images/default_blog_image.jpg' %}" class="img-fluid" alt="Blog image" style="border-radius: 10px;">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">Title: {{ post.title }}</h5>
+                                <a href="{% url 'blog:client_blog_detail' post.id %}" class="btn btn-primary">Read More &raquo;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="alert alert-warning" role="alert">
+                    No blogs available.
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascript %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const currentDate = new Date().toISOString().slice(0, 10);
+    const currentTime = new Date().toTimeString().slice(0, 5);
+
+    const fromDateField = document.querySelector('input[name="available_from_date"]');
+    const toDateField = document.querySelector('input[name="available_to_date"]');
+    const fromTimeField = document.querySelector('input[name="available_from_time"]');
+    const toTimeField = document.querySelector('input[name="available_to_time"]');
+
+    fromDateField.addEventListener('change', function() {
+        if (this.value === currentDate) {
+            fromTimeField.min = currentTime;
+        } else {
+            fromTimeField.min = '00:00';
+        }
+    });
+
+    toDateField.addEventListener('change', function() {
+        if (this value === currentDate) {
+            toTimeField.min = currentTime;
+        } else {
+            toTimeField.min = '00:00';
+        }
+    });
+});
+</script>
+{% endblock javascript %}

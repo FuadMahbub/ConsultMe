@@ -1,0 +1,108 @@
+{% extends 'client_base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .card-header {
+        color: #fff; /* White text color */
+    }
+    .sent-files {
+        background-color: #17a2b8; /* Bootstrap info color for sent files header */
+    }
+    .received-files {
+        background-color: #ffc107; /* Bootstrap warning color for received files header */
+    }
+    .card-body {
+        overflow-y: auto; /* Add scroll to card body if content is too long */
+        max-height: 400px; /* Fixed max height for scrolling */
+    }
+    .full-height {
+        min-height: 90vh; /* Minimum height to fill the screen */
+    }
+</style>
+
+<div class="container mt-4 full-height">
+    <h2 class="mb-3">Case Details</h2>
+
+    <div class="row">
+        <!-- Sent Files Section -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header sent-files">
+                    Sent Files
+                </div>
+                <div class="card-body">
+                    {% if case.files.all %}
+                        <ul class="list-group list-group-flush">
+                        {% for file in case.files.all %}
+                            {% if file.uploaded_by == request.user %}
+                                <li class="list-group-item">
+                                    <h1 ><a href="{{ file.file.url }}" style="color:blue ;" target="_blank">File: {{ file.file.name }}</a></h1>
+                                    <p class="mb-1 text-muted">Description: {{ file.description }}</p>
+                                    <small class="text-muted">Sent on {{ file.uploaded_at|date:"Y-m-d H:i" }}</small>
+                                </li>
+                            {% endif %}
+                        {% empty %}
+                            <p>No files sent yet.</p>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No files available.</p>
+                    {% endif %}
+                    <a class="btn btn-info mt-3" href="{% url 'case:client_upload_file' case.id %}">Send Files</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Received Files Section -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header received-files">
+                    Received Files
+                </div>
+                <div class="card-body">
+                    {% if case.files.all %}
+                        <ul class="list-group list-group-flush">
+                        {% for file in case.files.all %}
+                            {% if file.uploaded_by != request.user %}
+                                <li class="list-group-item">
+                                    <h1 ><a href="{{ file.file.url }}" style="color:blue ;" target="_blank">File: {{ file.file.name }}</a></h1>
+                                    <strong><p class="mb-1 text-muted">Description: {{ file.description }}</p></strong>
+                                    <small class="text-muted">Received on {{ file.uploaded_at|date:"Y-m-d H:i" }}</small>
+                                </li>
+                            {% endif %}
+                        {% empty %}
+                            <p>No files received yet.</p>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No files available.</p>
+                    {% endif %}
+                    <a class="btn btn-warning mt-3" href="{% url 'case:download_received_files' case.id %}">Download Files</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Close Case Button for Client -->
+    {% if request.user.client == case.client %}
+    <div class="text-center mt-4">
+        <!-- Create a form to send a POST request -->
+        <form id="end-case-form" method="post" action="{% url 'case:close_case' case.id %}">
+            {% csrf_token %} <!-- Important to include CSRF token for security -->
+            <!-- JavaScript confirmation dialog before submitting -->
+            <button class="btn btn-danger" type="button" onclick="confirmEndCase()">End Case</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+{% block javascript %}
+<script>
+    function confirmEndCase() {
+        if (confirm("Are you sure you want to end this case? This action cannot be undone.")) {
+            // Submit the form to send a POST request
+            document.getElementById("end-case-form").submit();
+        }
+    }
+</script>
+{% endblock %}

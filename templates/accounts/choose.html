@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block stylesheet %}
+
+<style>
+    
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transformation for hover effects */
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.1); /* Slight elevation and shadow on hover for interactivity */
+    }
+    .card-body {
+        text-align: center; /* Centers the text and button inside the card */
+    }
+    .card-title {
+        color: #0056b3; /* Dark blue for titles for better emphasis */
+    }
+    .btn-primary {
+        width: 80%; /* Makes the button wider to better fill the card */
+        margin-top: 20px; /* Extra space above the button */
+    }
+</style>
+{% endblock stylesheet %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mb-4"><strong>Lawyer or Client?</strong></h1>
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4 mb-3">
+          <div class="card">
+            
+            <div class="card-body">
+              <h5 class="card-title">Lawyer</h5>
+              <p class="card-text">If you are a lawyer, click below to access your dedicated portal.</p>
+              <a href="{% url 'accounts:lawyer' %}" class="btn btn-primary">Register as a Lawyer  </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="card">
+            
+            <div class="card-body">
+              <h5 class="card-title">Client</h5>
+              <p class="card-text">If you are seeking legal assistance, click here to find a lawyer.</p>
+              <a href="{% url 'accounts:client' %}" class="btn btn-primary">Register as a Client</a>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascript %}
+<!-- Optionally, you can add custom JavaScript here -->
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'lawyer_base.html' %}
+
+{% block title %}Invoice Detail{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Invoice details section with a white background and proper padding -->
+    <div class="invoice-detail bg-white p-4 rounded shadow-sm">
+        <h1>Invoice Details for Lawyer</h1>
+            <div>
+                <p><strong>Invoice Number:</strong> {{ invoice.id }}</p>
+                <p><strong>Status:</strong> {{ invoice_status }}</p>
+                {% if case %}
+                <h2>Case Details</h2>
+                <p><strong>Case Name:</strong> {{ case.name }}</p>
+                <p><strong>Description:</strong> {{ case.description }}</p>
+                <p><strong>Total Fee:</strong> ${{ total_fee }}</p>
+                <p><strong>Total Paid:</strong> ${{ total_paid }}</p>
+                <p><strong>Amount Due:</strong> ${{ payment_due }}</p>
+                {% else %}
+                <p>No case information available.</p>
+                {% endif %}
+            </div>
+
+        <!-- Additional details like payment reference and card info if available -->
+        <div class="mb-3">
+            {% if invoice.payment_reference %}
+                <p><strong>Payment Reference:</strong> {{ invoice.payment_reference }}</p>
+            {% endif %}
+            {% if invoice.card_last_four %}
+                <p><strong>Card Last Four:</strong> **** **** **** {{ invoice.card_last_four }}</p>
+            {% endif %}
+        </div>
+        
+        <!-- Actions such as download PDF -->
+        <div class="text-center mt-4">
+           
+            <a href="{% url 'billing:download_invoice' invoice.id %}" class="btn btn-primary">Download Invoice</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}

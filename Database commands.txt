@@ -1,0 +1,10 @@
+DROP DATABASE LawFirm;
+CREATE DATABASE LawFirm;
+
+CREATE USER lawfirm WITH password 'password';
+\c lawfirm (connect with the database) (most important)
+CREATE SCHEMA lawschema AUTHORIZATION lawfirm;
+ALTER ROLE lawfirm SET client_encoding TO 'utf8';
+ALTER ROLE lawfirm SET default_transaction_isolation TO 'read committed';
+ALTER ROLE lawfirm SET timezone TO 'UTC';
+ALTER ROLE lawfirm IN DATABASE LawFirm set search_path=lawschema;

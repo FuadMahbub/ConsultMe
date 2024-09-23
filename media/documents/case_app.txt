@@ -1,0 +1,210 @@
+python manage.py startapp case_app
+
+--------------Model----------------------------
+from django.db import models
+from accounts_app.models import Lawyer, Client
+
+class Case(models.Model):
+    STATUS_CHOICES = [
+        ('open', 'Open'),
+        ('closed', 'Closed'),
+        ('in_progress', 'In Progress'),
+        ('on_hold', 'On Hold'),
+    ]
+
+    title = models.CharField(max_length=255)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='cases')
+    lawyer = models.ForeignKey(Lawyer, on_delete=models.CASCADE, related_name='cases')
+    case_details = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+class CaseDocument(models.Model):
+    case = models.ForeignKey(Case, related_name='documents', on_delete=models.CASCADE)
+    document = models.FileField(upload_to='case_documents/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Document for {self.case.title}"
+
+
+
+
+
+
+
+-----------Admin----------------
+from django.contrib import admin
+from .models import Case, CaseDocument
+
+admin.site.register(Case)
+admin.site.register(CaseDocument)
+
+
+
+------Forms-------------
+
+from django import forms
+from .models import Case, CaseDocument
+
+class CaseForm(forms.ModelForm):
+    class Meta:
+        model = Case
+        fields = ['title', 'client', 'lawyer', 'case_details', 'status']
+
+class CaseDocumentForm(forms.ModelForm):
+    class Meta:
+        model = CaseDocument
+        fields = ['document']
+
+
+
+---------------Views-----------------------
+from django.shortcuts import render, redirect
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from .models import Case
+from .forms import CaseForm, CaseDocumentForm
+
+class CaseListView(ListView):
+    model = Case
+    context_object_name = 'cases'
+
+class CaseDetailView(DetailView):
+    model = Case
+
+class CaseCreateView(CreateView):
+    model = Case
+    form_class = CaseForm
+    success_url = '/cases/'
+
+class CaseUpdateView(UpdateView):
+    model = Case
+    form_class = CaseForm
+    success_url = '/cases/'
+
+# Example of adding a document to a case
+def upload_case_document(request, case_id):
+    if request.method == 'POST':
+        form = CaseDocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            document = form.save(commit=False)
+            document.case_id = case_id
+            document.save()
+            return redirect('case_detail', pk=case_id)
+    else:
+        form = CaseDocumentForm()
+    return render(request, 'case_app/upload_document.html', {'form': form})
+
+
+----------------Urls--------------------
+
+from django.urls import path
+from .views import CaseListView, CaseDetailView, CaseCreateView, CaseUpdateView, upload_case_document
+
+urlpatterns = [
+    path('', CaseListView.as_view(), name='case_list'),
+    path('<int:pk>/', CaseDetailView.as_view(), name='case_detail'),
+    path('new/', CaseCreateView.as_view(), name='case_new'),
+    path('edit/<int:pk>/', CaseUpdateView.as_view(), name='case_edit'),
+    path('upload/<int:case_id>/', upload_case_document, name='upload_document'),
+]
+
+
+
+
+---------------Html pages-------------------------
+
+
+Case list
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Case List</h1>
+<a href="{% url 'case_new' %}" class="btn btn-primary">Create New Case</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Client</th>
+            <th>Lawyer</th>
+            <th>Status</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for case in cases %}
+        <tr>
+            <td>{{ case.title }}</td>
+            <td>{{ case.client.user.email }}</td>
+            <td>{{ case.lawyer.user.email }}</td>
+            <td>{{ case.status }}</td>
+            <td><a href="{% url 'case_detail' pk=case.pk %}">View</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+
+----------Case Detail------------------
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Case: {{ case.title }}</h1>
+<p><strong>Client:</strong> {{ case.client.user.email }}</p>
+<p><strong>Lawyer:</strong> {{ case.lawyer.user.email }}</p>
+<p><strong>Details:</strong> {{ case.case_details }}</p>
+<p><strong>Status:</strong> {{ case.status }}</p>
+<p><strong>Created at:</strong> {{ case.created_at }}</p>
+
+<a href="{% url 'case_edit' pk=case.pk %}" class="btn btn-primary">Edit Case</a>
+<a href="{% url 'upload_document' case_id=case.pk %}" class="btn btn-secondary">Upload Document</a>
+
+<h3>Documents</h3>
+<ul>
+    {% for document in case.documents.all %}
+    <li>{{ document.document.url }}</li>
+    {% empty %}
+    <p>No documents uploaded.</p>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'case_list' %}">Back to List</a>
+{% endblock %}
+
+
+
+
+----------------Case Form--------------
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% if object %}Edit{% else %}New{% endif %} Case</h1>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="{% url 'case_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
+
+
+
+--------------Upload Document-------------------
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Upload Document for Case: {{ case.title }}</h1>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Upload</button>
+    <a href="{% url 'case_detail' pk=case_id %}" class="btn btn-secondary">Back to Case Details</a>
+</form>
+{% endblock %}
+

@@ -1,0 +1,94 @@
+{% extends 'lawyer_base.html' %}
+
+{% block styles %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        max-width: 600px;
+        margin: 50px auto;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+    .chat-display {
+        min-height: 200px;
+        max-height: 400px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f3f4f6;
+    }
+    .message {
+        margin: 5px 0;
+        padding: 10px;
+        border-radius: 5px;
+    }
+    .user-message {
+        background-color: #007bff;
+        color: #fff;
+        align-self: flex-end;
+    }
+    .bot-message {
+        background-color: #6c757d;
+        color: #fff;
+    }
+    .user-input {
+        width: calc(100% - 85px);
+        padding: 10px;
+        border-radius: 5px 0 0 5px;
+        border: 1px solid #ccc;
+        outline: none;
+    }
+    .send-button {
+        width: 75px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 0 5px 5px 0;
+        cursor: pointer;
+        outline: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Lawyer Chatbot</h1>
+    <div class="chat-display" id="chatDisplay">
+        <!-- Messages will be displayed here -->
+    </div>
+    <input type="text" class="user-input" id="userInput" placeholder="Ask a legal question...">
+    <button class="send-button" onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+    function sendMessage() {
+        const userInput = document.getElementById('userInput').value;
+        if (!userInput.trim()) {
+            alert('Please enter a message');
+            return;
+        }
+        fetch(`/lawyerchatbot/chat-api/?message=${encodeURIComponent(userInput)}`)
+            .then(response => response.json())
+            .then(data => {
+                const chatDisplay = document.getElementById('chatDisplay');
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', 'bot-message');
+                messageDiv.innerText = data.response || data.error;
+                chatDisplay.appendChild(messageDiv);
+            })
+            .catch(error => {
+                console.error('Fetch Error:', error);
+                alert('Error sending message.');
+            });
+    }
+</script>
+{% endblock %}

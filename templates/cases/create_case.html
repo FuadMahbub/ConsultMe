@@ -1,0 +1,61 @@
+<!-- create_case.html -->
+{% extends "client_base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Create New Case</h2>
+    <form method="post" id="caseForm">
+        {% csrf_token %}
+        {% load crispy_forms_tags %}
+        {{ form|crispy }}
+        <div class="mb-3">
+            <label>Total Fee</label>
+            <input type="text" id="totalFee" class="form-control" readonly>
+        </div>
+        <div class="mb-3">
+            <label>Advance Payment (30%)</label>
+            <input type="text" id="advancePayment" class="form-control" readonly>
+        </div>
+        <div class="mb-3">
+            <label>Amount Due</label>
+            <input type="text" id="dueAmount" class="form-control" readonly>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const startDateField = document.querySelector('#id_start_date');
+    const endDateField = document.querySelector('#id_end_date');
+    const totalFeeField = document.querySelector('#totalFee');
+    const advancePaymentField = document.querySelector('#advancePayment');
+    const dueAmountField = document.querySelector('#dueAmount');
+    const consultationFee = {{ consultation_fee|safe }};
+
+    function calculateFees() {
+        const startDate = startDateField.value ? new Date(startDateField.value) : null;
+        const endDate = endDateField.value ? new Date(endDateField.value) : null;
+        if (startDate && endDate && endDate >= startDate) {
+            const diffTime = endDate - startDate;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            const totalFee = diffDays * consultationFee;
+            const advancePayment = totalFee * 0.30;
+            const dueAmount = totalFee - advancePayment;
+
+            totalFeeField.value = totalFee.toFixed(2);
+            advancePaymentField.value = advancePayment.toFixed(2);
+            dueAmountField.value = dueAmount.toFixed(2);
+        } else {
+            totalFeeField.value = '';
+            advancePaymentField.value = '';
+            dueAmountField.value = '';
+        }
+    }
+
+    startDateField.addEventListener('change', calculateFees);
+    endDateField.addEventListener('change', calculateFees);
+
+    // Calculate initially if dates are pre-populated
+    calculateFees();
+});
+</script>
+{% endblock %}

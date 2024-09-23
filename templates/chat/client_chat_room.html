@@ -1,0 +1,54 @@
+{% extends 'client_base.html' %}
+{% load static %}
+
+{% block title %}{{title}}{% endblock title %}
+
+
+{% block stylesheet %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock stylesheet %}
+
+
+{% block content %}
+<h1>Client Chat Room</h1>
+    <div id="chat-messages"></div>
+    <input type="text" id="message-input" placeholder="Type your message...">
+    <button id="send-message">Send</button>
+
+    <script>
+        // WebSocket connection
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/client-chat-room/{{ chat_room_name }}/'
+        );
+
+        // Function to add a new message to the chat interface
+        function addMessage(message) {
+            $('#chat-messages').append('<p>' + message + '</p>');
+        }
+
+        // Event listener for the WebSocket connection
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            addMessage(data.message);
+        };
+
+        // Event listener for sending messages
+        $('#send-message').click(function() {
+            const messageInputDom = $('#message-input');
+            const message = messageInputDom.val();
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.val('');
+        });
+    </script>
+{% endblock content %}
+
+
+
+{% block javascript %}
+
+    
+{% endblock%}

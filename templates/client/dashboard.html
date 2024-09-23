@@ -1,0 +1,145 @@
+{% extends "client_base.html" %}
+{% load static %}
+
+{% block content %}
+
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Welcome Message -->
+        <div class="col-md-12">
+            <h1 class="mb-4">Welcome to Your Dashboard</h1>
+        </div>
+
+        <!-- Accepted Lawyer Information -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2>Accepted Lawyer</h2>
+                </div>
+                {% if accepted_lawyer %}
+                <div class="card-body">
+                    <div class="media align-items-center">
+                        <img src="{{ accepted_lawyer.photo.url }}" class="mr-3 img-thumbnail" alt="Lawyer Photo" style="width: 100px;">
+                        <div class="media-body">
+                            <h5 class="mt-0">{{ accepted_lawyer.user.email }}</h5>
+                            <p>Last updated {{ accepted_lawyer.created_at|timesince }} ago</p>
+                            <a href="{% url 'client:lawyer_profile_view' %}" class="btn btn-warning">View Profile</a>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card-body">
+                    <p>No lawyer has accepted your request yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Rooms -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h2>Chat Room</h2>
+                </div>
+                <div class="card-body">
+                    {% for room in rooms %}
+                    <div class="media mb-3">
+                        <div class="media-body">
+                            <h5 class="mt-0 mb-1">Room: {{ room.name }}</h5>
+                            <p>Lawyer: {{ room.lawyer.user.email }}</p>
+                            <a href="{% url 'chat:chatroom' room.id %}" class="btn btn-primary">Enter Room</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p>No rooms found.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Cases Section -->
+        <div class="col-md-12 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-secondary text-white">
+                    <h2>Want to create a Case?</h2>
+                </div>
+                <div class="card-body">
+                    
+                    <div class="alert alert-info" role="alert">
+                        <h4 class="alert-heading">Create a case with this lawyer </h4>
+                        <p>Noted: Charge will increase according to your criteria</p>
+                        <hr>
+                        
+                        <a href="{% url 'case:create_case' %}" class="btn btn-success">YES</a>
+                        <a href="#" class="btn btn-danger">NO</a>
+                    </div>
+                    
+                    
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Cases Section -->
+        <div class="col-md-12 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-secondary text-white">
+                    <h2>Your Cases</h2>
+                </div>
+                <div class="card-body">
+                    {% if cases %}
+                    {% for case in cases %}
+                    <div class="alert alert-info" role="alert">
+                        <h4 class="alert-heading">Case ID: {{ case.id }}</h4>
+                        <p>Description: {{ case.description }}</p>
+                        <hr>
+                        <p class="mb-0">Status: {{ case.status|default:"Active" }}</p>
+                        <a href="{% url 'case:client_case_detail' case.id %}" class="btn btn-info mt-2">View Files</a>
+                        <a href="{% url 'case:case_delete' case.pk %}" class="btn btn-danger mt-2">Delete Case</a>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p>No cases available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div> \
+
+    <!-- Invoices Section -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h2>Invoices</h2>
+                </div>
+                <div class="card-body">
+                    {% if invoices %}
+                    {% for invoice in invoices %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h4 class="card-title">Invoice #{{ invoice.id }}</h4>
+                            <p>Amount Due: {{ invoice.amount }}</p>
+                            <p>Description: {{ invoice.description }}</p>
+                            <p>Status: {{ invoice.status }}</p>
+                            {% if invoice.status != "paid" %}
+                            <a href="{% url 'billing:process_payment' invoice.id %}" class="btn btn-warning">Pay Invoice</a>
+                            {% endif %}
+                            <a href="{% url 'billing:clientinvoice_detail' invoice.id %}" class="btn btn-info">View Invoice</a>
+                            <a href="{% url 'billing:download_invoice' invoice.id %}" class="btn btn-success">Download Invoice</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p>No invoices available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

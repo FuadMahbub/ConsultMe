@@ -1,0 +1,42 @@
+{% extends 'lawyer_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block stylesheet %}
+
+{% endblock stylesheet %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-4 mb-4">Consultation Requests</h1>
+
+    <div class="row">
+        {% for consultation_request in consultation_requests %}
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Client: {{ consultation_request.client }}</h5>
+                    <p class="card-text">Problem: {{ consultation_request.problem }}</p>
+                    <p class="card-text"><a href="{{ consultation_request.document.url }}">Document- {{ consultation_request.document }}</a></p>
+                    
+                    <p class="card-text">Status: {{ consultation_request.status }}</p>
+                    <form action="{% url 'lawyer:accept_request' consultation_request.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" name="accept" class="btn btn-success">Accept</button>
+                    </form>
+                    <form action="{% url 'lawyer:reject_request' consultation_request.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" name="reject" class="btn btn-danger mt-2">Reject</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascript %}
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+{% endblock javascript %}
